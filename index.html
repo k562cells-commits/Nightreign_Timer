@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Night Reign Timer & Weakness</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #121212;
+            color: #f0f0f0;
+            margin: 0;
+            padding: clamp(5px, 0.8vw, 15px);
+            box-sizing: border-box;
+            font-size: clamp(12px, 1.0vw, 15px);
+            overflow-y: auto;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(8px, 1.2vw, 25px);
+            width: clamp(250px, 98vw, 100%);
+            box-sizing: border-box;
+        }
+        
+       .top-row-wrapper {
+            display: grid;
+            grid-template-columns: 15% 1fr;
+            gap: clamp(8px, 1.2vw, 25px);
+            align-items: flex-start;
+        }
+        .left-column-wrapper {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(8px, 1vw, 15px);
+            background-color: #1e1e1e;
+            padding: clamp(8px, 1vw, 18px);
+            border-radius: clamp(6px, 0.7vw, 10px);
+            box-shadow: 0 clamp(3px, 0.7vw, 7px) clamp(6px, 1.4vw, 14px) rgba(0, 0, 0, 0.6);
+            border: clamp(1px, 0.1vw, 2px) solid #333;
+            box-sizing: border-box;
+            align-items: center;
+        }
+
+        .right-column-wrapper {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(8px, 1vw, 15px);
+        }
+        
+        .right-column-item {
+            background-color: #1e1e1e;
+            padding: clamp(8px, 1vw, 18px);
+            border-radius: clamp(6px, 0.7vw, 10px);
+            box-shadow: 0 clamp(3px, 0.7vw, 7px) clamp(6px, 1.4vw, 14px) rgba(0, 0, 0, 0.6);
+            border: clamp(1px, 0.1vw, 2px) solid #333;
+            box-sizing: border-box;
+        }
+
+        .rune-daily-boss-wrapper {
+            display: flex;
+            flex-direction: row;
+            gap: clamp(8px, 1.2vw, 15px);
+            width: 100%;
+        }
+
+        .rune-cost-table-container {
+            flex: 0 0 15%;
+            min-width: 0;
+            background-color: #1e1e1e;
+            padding: clamp(8px, 1vw, 18px);
+            border-radius: clamp(6px, 0.7vw, 10px);
+            box-shadow: 0 clamp(3px, 0.7vw, 7px) clamp(6px, 1.4vw, 14px) rgba(0, 0, 0, 0.6);
+            border: clamp(1px, 0.1vw, 2px) solid #333;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .daily-boss-table-container {
+            flex: 0 0 30%;
+            min-width: 0;
+            background-color: #1e1e1e;
+            padding: clamp(8px, 1vw, 18px);
+            border-radius: clamp(6px, 0.7vw, 10px);
+            box-shadow: 0 clamp(3px, 0.7vw, 7px) clamp(6px, 1.4vw, 14px) rgba(0, 0, 0, 0.6);
+            border: clamp(1px, 0.1vw, 2px) solid #333;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .timer-wrapper {
+            justify-content: space-around;
+            min-height: clamp(80px, 10vh, 120px);
+            padding: 0;
+            background-color: transparent;
+            box-shadow: none;
+            border: none;
+            border-radius: 0;
+            width: 100%;
+            text-align: center;
+        }
+
+        .field-boss-table-container {
+            width: 100%;
+            background-color: transparent;
+            box-shadow: none;
+            border: none;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .weakness-table-container {
+            overflow-x: auto;
+            width: 100%;
+            flex: 1;
+            min-width: 0;
+            background-color: #1e1e1e;
+            padding: clamp(8px, 1vw, 18px);
+            border-radius: clamp(6px, 0.7vw, 10px);
+            box-shadow: 0 clamp(3px, 0.7vw, 7px) clamp(6px, 1.4vw, 14px) rgba(0, 0, 0, 0.6);
+            border: clamp(1px, 0.1vw, 2px) solid #333;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        #timer-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(0.7em, 1.8vw, 1.4em);
+            font-weight: 700;
+            color: #d4af37;
+            margin-bottom: 0.05em;
+            line-height: 1.0;
+            text-transform: uppercase;
+        }
+        #phase-name {
+            font-family: 'Consolas', 'Menlo', monospace;
+            font-size: clamp(1.5em, 5vw, 3.5em);
+            font-weight: bold;
+            color: #FFFF88;
+            margin-bottom: 0.05em;
+            min-height: 1.1em;
+            transition: color 0.6s ease-in-out, text-shadow 0.6s ease-in-out;
+            text-shadow: 0 0 clamp(1px, 0.5vw, 5px) rgba(255, 255, 136, 0.7);
+        }
+        .phase-1 #phase-name { color: #FFFF88; text-shadow: 0 0 clamp(1px, 0.5vw, 5px) rgba(255, 255, 136, 0.7); }
+        .phase-2 #phase-name { color: #000066; text-shadow: 0 0 clamp(1px, 0.5vw, 5px) rgba(0, 0, 102, 0.8); }
+        .phase-3 #phase-name { color: #FFFF88; text-shadow: 0 0 clamp(1px, 0.5vw, 5px) rgba(255, 255, 136, 0.7); }
+        .phase-4 #phase-name { color: #000066; text-shadow: 0 0 clamp(1px, 0.5vw, 5px) rgba(0, 0, 102, 0.8); }
+
+        #phase-info {
+            font-size: clamp(0.6em, 1.3vw, 0.9em);
+            color: #a0a0a0;
+            margin-top: 0.05em;
+            min-height: 1.2em;
+        }
+        .buttons {
+            margin-top: 0.4em;
+            display: flex;
+            gap: 0.5em;
+            justify-content: center;
+        }
+        .buttons button {
+            padding: 0.4em 0.8em;
+            font-size: clamp(0.4em, 1.0vw, 0.7em);
+            font-weight: bold;
+            border: none;
+            border-radius: 0.4em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 0.2em 0.4em rgba(0, 0, 0, 0.3);
+            min-width: clamp(35px, 5vw, 70px);
+            min-height: clamp(18px, 2.5vw, 35px);
+        }
+        #startButton { background-color: #556b2f; color: #e0e0e0; }
+        #startButton:hover { background-color: #6b8e23; transform: translateY(-0.1em); box-shadow: 0 0.3em 0.7em rgba(0, 0, 0, 0.4); }
+        #startButton:active { transform: translateY(0); box-shadow: 0 0.1em 0.3em rgba(0, 0, 0, 0.3); }
+        #resetButton { background-color: #8b0000; color: #e0e0e0; }
+        #resetButton:hover { background-color: #a52a2a; transform: translateY(-0.1em); box-shadow: 0 0.3em 0.7em rgba(0, 0, 0, 0.4); }
+        #resetButton:active { transform: translateY(0); box-shadow: 0 0.1em 0.3em rgba(0, 0, 0, 0.3); }
+
+            /* すべてのタイトルに共通のスタイルを適用 */
+            .grid-item h2, #timer-title {
+                font-family: 'Cinzel', serif;
+                font-weight: 700;
+                color: #d4af37;
+                text-transform: uppercase;
+                text-align: center;
+            }
+
+            /* タイマーのタイトル専用のフォントサイズとマージン */
+            #timer-title {
+                font-size: clamp(0.7em, 1.8vw, 1.4em);
+                margin-bottom: 0.05em;
+                line-height: 1.0;
+            }
+
+            /* その端の表のタイトル専用のフォントサイズとマージン */
+            .grid-item h2 {
+                font-size: clamp(0.9em, 1.4vw, 1.2em);
+                margin-top: 0;
+                margin-bottom: 0.5em;
+            }
+
+            /* その他のスタイルはそのままです */
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: clamp(0.65em, 0.9vw, 0.85em);
+                table-layout: auto;
+                color: #f0f0f0;
+            }
+            .weakness-table-container table {
+                width: max-content;
+                min-width: 100%;
+            }
+        th, td {
+            border: clamp(1px, 0.1vw, 1.5px) solid #444;
+            padding: clamp(1px, 0.3vw, 4px) clamp(2px, 0.5vw, 6px);
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .weakness-table-container th,
+        .weakness-table-container td {
+            white-space: normal;
+        }
+        .field-boss-table-container th:first-child,
+        .field-boss-table-container td:first-child {
+            text-align: left;
+            padding-left: clamp(5px, 1vw, 10px);
+        }
+        .field-boss-table-container th:last-child,
+        .field-boss-table-container td:last-child {
+            text-align: right;
+            padding-right: clamp(5px, 1vw, 10px);
+        }
+
+        .rune-cost-table-container th:nth-child(1),
+        .rune-cost-table-container td:nth-child(1) { width: 25%; }
+        .rune-cost-table-container th:nth-child(2),
+        .rune-cost-table-container td:nth-child(2) { width: 75%; }
+        
+        .daily-boss-table-container th:nth-child(1),
+        .daily-boss-table-container td:nth-child(1) { width: 35%; }
+        .daily-boss-table-container th:nth-child(2),
+        .daily-boss-table-container td:nth-child(2) { width: 25%; }
+        .daily-boss-table-container th:nth-child(3),
+        .daily-boss-table-container td:nth-child(3) { width: 20%; }
+        .daily-boss-table-container th:nth-child(4),
+        .daily-boss-table-container td:nth-child(4) { width: 20%; }
+
+        /* 弱点/耐性の色分け */
+        .positive-percent { color: #5cb85c; }
+        .negative-percent { color: #d9534f; }
+        .highest-percent { font-weight: bold; }
+        .value-green { color: #5cb85c; }
+        .value-red { color: #d9534f; }
+        .value-normal { color: inherit; }
+        .invalid-text { color: #d9534f; }
+        .weakness-header-color-magic { color: #4169e1; }
+        .weakness-header-color-fire { color: #FF0000; }
+        .weakness-header-color-lightning { color: #ffffc2; }
+        .weakness-header-color-divine { color: #cfcf47; }
+        .weakness-header-color-poison { color: #5db803; }
+        .weakness-header-color-rot { color: #E9967A; }
+        .weakness-header-color-bleed { color: #ab0303; }
+        .weakness-header-color-frostbite { color: #ADD8E6; }
+        .weakness-header-color-sleep { color: #9370DB; }
+        .weakness-header-color-madness { color: #fcc603; }
+        .weakness-divine { color: #cfcf47; }
+        .weakness-fire { color: #FF0000; }
+        .weakness-lightning { color: #ffffc2; }
+        .weakness-magic { color: #4169e1; }
+        .weakness-poison { color: #5db803; }
+        .weakness-rot { color: #E9967A; }
+        .weakness-bleed { color: #ab0303; }
+        .weakness-frostbite { color: #ADD8E6; }
+        .weakness-sleep { color: #9370DB; }
+        .weakness-madness { color: #fcc603; }
+        .weakness-resistance { color: #d9534f; }
+        
+        @media (max-width: 800px) {
+            .top-row-wrapper {
+                flex-direction: column;
+            }
+            .left-column-wrapper {
+                width: 100%;
+                max-width: none;
+                padding: clamp(6px, 1vw, 12px);
+            }
+            .right-column-wrapper {
+                width: 100%;
+                max-width: none;
+                padding: 0;
+                background-color: transparent;
+                box-shadow: none;
+                border: none;
+                border-radius: 0;
+            }
+            .rune-daily-boss-wrapper {
+                flex-direction: column;
+            }
+            .rune-cost-table-container, .daily-boss-table-container, .weakness-table-container {
+                width: 100%;
+                padding: clamp(6px, 1vw, 12px);
+            }
+            .timer-wrapper {
+                aspect-ratio: 4 / 3;
+                min-height: clamp(90px, 14vh, 140px);
+            }
+            #phase-name { font-size: clamp(2.0em, 9vw, 3.0em); }
+            #phase-info { font-size: clamp(0.7em, 1.8vw, 1.0em); }
+            .buttons button { font-size: clamp(0.6em, 1.3vw, 0.7em); }
+            .grid-item h2 { font-size: clamp(1.0em, 2.5vw, 1.2em); }
+            table { font-size: clamp(0.65em, 1.3vw, 0.85em); }
+            th, td {
+                padding: clamp(2px, 0.7vw, 4px) clamp(2px, 0.7vw, 5px);
+                white-space: normal;
+                word-break: break-word;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="top-row-wrapper">
+            <div class="left-column-wrapper">
+                <div class="timer-wrapper">
+                    <div id="timer-title">NIGHTREIGN<br>TIMER</div>
+                    <div id="phase-name">04:30</div>
+                    <div id="phase-info">Phase 1: 4.5m</div>
+                    <div class="buttons">
+                        <button id="startButton">START</button>
+                        <button id="resetButton">RESET</button>
+                    </div>
+                </div>
+                <div class="field-boss-table-container">
+                    <h2>FIELD BOSS</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>名前</th>
+                                <th>ルーン</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>カーリアの親衛騎士</td><td>45,000</td></tr>
+                            <tr><td>死儀礼の鳥</td><td>45,000</td></tr>
+                            <tr><td>黒き剣の眷属</td><td>45,000</td></tr>
+                            <tr><td>ツリーガード</td><td>30,000</td></tr>
+                            <tr><td>竜のツリーガード</td><td>30,000</td></tr>
+                            <tr><td>黄金樹の化身</td><td>30,000</td></tr>
+                            <tr><td>祖霊</td><td>30,000</td></tr>
+                            <tr><td>爛れた樹霊</td><td>30,000</td></tr>
+                            <tr><td>溶岩土竜</td><td>30,000</td></tr>
+                            <tr><td>鈴玉狩り</td><td>30,000</td></tr>
+                            <tr><td>丘陵の飛竜</td><td>30,000</td></tr>
+                            <tr><td>夜の騎兵</td><td>16,400</td></tr>
+                            <tr><td>ザミェルの古英雄</td><td>15,000</td></tr>
+                            <tr><td>黄金カバ</td><td>15,000</td></tr>
+                            <tr><td>接ぎ木の貴公子</td><td>15,000</td></tr>
+                            <tr><td>王族の幽鬼</td><td>15,000</td></tr>
+                            <tr><td>獅子の混種</td><td>15,000</td></tr>
+                            <tr><td>黒き刃の刺客</td><td>15,000</td></tr>
+                            <tr><td>王配の赤狼</td><td>15,000</td></tr>
+                            <tr><td>ミランダフラワー</td><td>11,000</td></tr>
+                            <tr><td>亜人の女王</td><td>10,800</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="right-column-wrapper">
+                <div class="rune-daily-boss-wrapper">
+                    <div class="rune-cost-table-container">
+                        <h2>RUNE COST</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Level</th>
+                                    <th>Level Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>1</td><td>0</td></tr>
+                                <tr><td>2</td><td>3698</td></tr>
+                                <tr><td>3</td><td>7922</td></tr>
+                                <tr><td>4</td><td>12348</td></tr>
+                                <tr><td>5</td><td>16978</td></tr>
+                                <tr><td>6</td><td>21818</td></tr>
+                                <tr><td>7</td><td>26869</td></tr>
+                                <tr><td>8</td><td>32137</td></tr>
+                                <tr><td>9</td><td>37624</td></tr>
+                                <tr><td>10</td><td>43335</td></tr>
+                                <tr><td>11</td><td>49271</td></tr>
+                                <tr><td>12</td><td>55439</td></tr>
+                                <tr><td>13</td><td>61840</td></tr>
+                                <tr><td>14</td><td>68479</td></tr>
+                                <tr><td>15</td><td>75358</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="daily-boss-table-container">
+                        <h2>NIGHT RORD PREDICTION CHART</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>1日目ボス</th>
+                                    <th>夜の王</th>
+                                    <th>弱点</th>
+                                    <th>耐性</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>亜人の女王 & 亜人の剣聖</td><td>グラディウス</td><td class="weakness-divine">聖</td><td><span class="weakness-fire">炎</span></td></tr>
+                                <tr><td>鈴玉狩り</td><td>グラディウス</td><td class="weakness-divine">聖</td><td><span class="weakness-fire">炎</span></td></tr>
+                                <tr><td>貪食ドラゴン</td><td>エデレ</td><td class="weakness-poison">毒</td><td><span class="weakness-lightning">雷</span>, <span class="weakness-fire">炎</span></td></tr>
+                                <tr><td></td><td>マリス</td><td class="weakness-lightning">雷</td><td><span class="weakness-fire">炎</span>, <span class="weakness-magic">魔</span>, <span class="weakness-divine">聖</span></td></tr>
+                                <tr><td></td><td>フルゴール</td><td class="weakness-lightning">雷</td><td><span class="weakness-divine">聖</span></td></tr>
+                                <tr><td>ミミズ顔</td><td>エデレ</td><td class="weakness-poison">毒</td><td><span class="weakness-lightning">雷</span>, <span class="weakness-fire">炎</span></td></tr>
+                                <tr><td></td><td>マリス</td><td class="weakness-lightning">雷</td><td><span class="weakness-fire">炎</span>, <span class="weakness-magic">魔</span>, <span class="weakness-divine">聖</span></td></tr>
+                                <tr><td></td><td>フルゴール</td><td class="weakness-lightning">雷</td><td><span class="weakness-divine">聖</span></td></tr>
+                                <tr><td>夜の騎兵</td><td>エデレ</td><td class="weakness-poison">毒</td><td><span class="weakness-lightning">雷</span>, <span class="weakness-fire">炎</span></td></tr>
+                                <tr><td></td><td>フルゴール</td><td class="weakness-lightning">雷</td><td><span class="weakness-divine">聖</span></td></tr>
+                                <tr><td>英雄のガーゴイル</td><td>エデレ</td><td class="weakness-poison">毒</td><td><span class="weakness-lightning">雷</span>, <span class="weakness-fire">炎</span></td></tr>
+                                <tr><td></td><td>マリス</td><td class="weakness-lightning">雷</td><td><span class="weakness-fire">炎</span>, <span class="weakness-magic">魔</span>, <span class="weakness-divine">聖</span></td></tr>
+                                <tr><td>公のフレイディア</td><td>エデレ</td><td class="weakness-poison">毒</td><td><span class="weakness-lightning">雷</span>, <span class="weakness-fire">炎</span></td></tr>
+                                <tr><td></td><td>カリゴ</td><td class="weakness-fire">炎</td><td><span class="weakness-magic">魔</span>, <span class="weakness-lightning">雷</span>, <span class="weakness-divine">聖</span></td></tr>
+                                <tr><td></td><td>リブラ</td><td class="weakness-divine">聖, <span class="weakness-fire">炎</span></td><td><span class="weakness-magic">魔</span></td></tr>
+                                <tr><td>百足のデーモン</td><td>グノスター</td><td class="weakness-fire">炎</td><td><span class="weakness-magic">魔</span>, <span class="weakness-lightning">雷</span>, <span class="weakness-divine">聖</span></td></tr>
+                                <tr><td></td><td>リブラ</td><td class="weakness-divine">聖, <span class="weakness-fire">炎</span></td><td><span class="weakness-magic">魔</span></td></tr>
+                                <tr><td></td><td>フルゴール</td><td class="weakness-lightning">雷</td><td><span class="weakness-divine">聖</span></td></tr>
+                                <tr><td>戦場の宿将</td><td>グノスター</td><td class="weakness-fire">炎</td><td><span class="weakness-magic">魔</span>, <span class="weakness-lightning">雷</span>, <span class="weakness-divine">聖</span></td></tr>
+                                <tr><td></td><td>リブラ</td><td class="weakness-divine">聖, <span class="weakness-fire">炎</span></td><td><span class="weakness-magic">魔</span></td></tr>
+                                <tr><td></td><td>フルゴール</td><td class="weakness-lightning">雷</td><td><span class="weakness-divine">聖</span></td></tr>
+                                <tr><td>熔鉄デーモン</td><td>グノスター</td><td class="weakness-fire">炎</td><td><span class="weakness-magic">魔</span>, <span class="weakness-lightning">雷</span>, <span class="weakness-divine">聖</span></td></tr>
+                                <tr><td></td><td>マリス</td><td class="weakness-lightning">雷</td><td><span class="weakness-fire">炎</span>, <span class="weakness-magic">魔</span>, <span class="weakness-divine">聖</span></td></tr>
+                                <tr><td></td><td>カリゴ</td><td class="weakness-fire">炎</td><td><span class="weakness-magic">魔</span>, <span class="weakness-lightning">雷</span>, <span class="weakness-divine">聖</span></td></tr>
+                                <tr><td>ティビアの呼び舟</td><td>グノスター</td><td class="weakness-fire">炎</td><td><span class="weakness-magic">魔</span>, <span class="weakness-lightning">雷</span>, <span class="weakness-divine">聖</span></td></tr>
+                                <tr><td></td><td>リブラ</td><td class="weakness-divine">聖, <span class="weakness-fire">炎</span></td><td><span class="weakness-magic">魔</span></td></tr>
+                                <tr><td></td><td>カリゴ</td><td class="weakness-fire">炎</td><td><span class="weakness-magic">魔</span>, <span class="weakness-lightning">雷</span>, <span class="weakness-divine">聖</span></td></tr>
+                                <tr><td>爛れた樹霊</td><td>グノスター</td><td class="weakness-fire">炎</td><td><span class="weakness-magic">魔</span>, <span class="weakness-lightning">雷</span>, <span class="weakness-divine">聖</span></td></tr>
+                                <tr><td></td><td>カリゴ</td><td class="weakness-fire">炎</td><td><span class="weakness-magic">魔</span>, <span class="weakness-lightning">雷</span>, <span class="weakness-divine">聖</span></td></tr>
+                                <tr><td>接ぎ木の君主</td><td>マリス</td><td class="weakness-lightning">雷</td><td><span class="weakness-fire">炎</span>, <span class="weakness-magic">魔</span>, <span class="weakness-divine">聖</span></td></tr>
+                                <tr><td></td><td>カリゴ</td><td class="weakness-fire">炎</td><td><span class="weakness-magic">魔</span>, <span class="weakness-lightning">雷</span>, <span class="weakness-divine">聖</span></td></tr>
+                                <tr><td>王族の幽鬼</td><td>リブラ</td><td class="weakness-divine">聖, <span class="weakness-fire">炎</span></td><td><span class="weakness-magic">魔</span></td></tr>
+                                <tr><td></td><td>フルゴール</td><td class="weakness-lightning">雷</td><td><span class="weakness-divine">聖</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="weakness-table-container">
+                        <h2>NIGHT LORD WEAKNESS</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>夜の王</th>
+                                    <th>弱点</th>
+                                    <th>標準</th>
+                                    <th>斬撃</th>
+                                    <th>打撃</th>
+                                    <th>刺突</th>
+                                    <th class="weakness-header-color-magic">魔力</th>
+                                    <th class="weakness-header-color-fire">炎</th>
+                                    <th class="weakness-header-color-lightning">雷</th>
+                                    <th class="weakness-header-color-divine">聖</th>
+                                    <th class="weakness-header-color-poison">毒</th>
+                                    <th class="weakness-header-color-rot">腐敗</th>
+                                    <th class="weakness-header-color-bleed">出血</th>
+                                    <th class="weakness-header-color-frostbite">冷気</th>
+                                    <th class="weakness-header-color-sleep">睡眠</th>
+                                    <th class="weakness-header-color-madness">発狂</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>グラディウス</td><td class="weakness-divine">聖</td><td></td><td></td><td></td><td class="positive-percent">+10%</td><td></td><td class="negative-percent">-50%</td><td></td><td class="positive-percent highest-percent"><b>+35%</b></td><td class="value-red">542</td><td class="value-normal">252</td><td class="value-normal">252</td><td class="value-red">542</td><td class="value-green">154</td><td class="invalid-text">無効</td>
+                                </tr>
+                                <tr>
+                                    <td>エデレ</td><td class="weakness-poison">毒</td><td></td><td></td><td></td><td></td><td></td><td class="negative-percent">-20%</td><td class="negative-percent">-50%</td><td></td><td class="value-green">154</td><td class="value-green">154</td><td class="value-red">542</td><td class="value-green">154</td><td class="value-green">154</td><td class="invalid-text">無効</td>
+                                </tr>
+                                <tr>
+                                    <td>グノスター</td><td class="weakness-fire">炎</td><td class="positive-percent">+15%</td><td class="positive-percent highest-percent"><b>+25%</b></td><td class="positive-percent">+15%</td><td class="positive-percent highest-percent"><b>+25%</b></td><td class="negative-percent">-50%</td><td class="positive-percent highest-percent"><b>+40%</b></td><td class="negative-percent">-10%</td><td class="negative-percent">-10%</td><td class="value-red">542</td><td class="value-green">154</td><td class="value-green">154</td><td class="value-green">154</td><td class="value-red">542</td><td class="invalid-text">無効</td>
+                                </tr>
+                                <tr>
+                                    <td>フォルティス</td><td class="weakness-fire">炎</td><td class="negative-percent">-10%</td><td class="negative-percent">-20%</td><td class="positive-percent">+20%</td><td class="positive-percent">+10%</td><td class="negative-percent">-10%</td><td class="positive-percent highest-percent"><b>+35%</b></td><td class="negative-percent">-10%</td><td class="negative-percent">-10%</td><td class="value-normal">252</td><td class="value-green">154</td><td class="value-green">154</td><td class="value-green">154</td><td class="value-green">154</td><td class="invalid-text">無効</td>
+                                </tr>
+                                <tr>
+                                    <td>マリス</td><td class="weakness-lightning">雷</td><td></td><td class="positive-percent">+15%</td><td class="negative-percent">-20%</td><td class="negative-percent">-10%</td><td class="negative-percent">-20%</td><td class="negative-percent">-50%</td><td class="positive-percent highest-percent"><b>+40%</b></td><td class="negative-percent">-15%</td><td class="invalid-text">無効</td><td class="value-normal">252</td><td class="invalid-text">無効</td><td class="value-normal">252</td><td class="invalid-text">無効</td><td class="invalid-text">無効</td>
+                                </tr>
+                                <tr>
+                                    <td>リブラ</td><td class="weakness-madness">発狂</td><td></td><td class="positive-percent">+10%</td><td></td><td></td><td class="negative-percent">-20%</td><td class="positive-percent">+20%</td><td></td><td class="positive-percent highest-percent"><b>+35%</b></td><td class="value-green">154</td><td class="value-green">154</td><td class="value-normal">252</td><td class="value-normal">252</td><td class="invalid-text">無効</td><td class="value-green">154</td>
+                                </tr>
+                                <tr>
+                                    <td>フルゴール</td><td class="weakness-lightning">雷</td><td></td><td></td><td></td><td></td><td></td><td></td><td class="positive-percent highest-percent"><b>+20%</b></td><td class="negative-percent">-30%</td><td class="value-green">154</td><td class="value-green">154</td><td class="value-green">154</td><td class="value-green">154</td><td class="value-green">154</td><td class="invalid-text">無効</td>
+                                </tr>
+                                <tr>
+                                    <td>カリゴ</td><td class="weakness-fire">炎</td><td></td><td class="negative-percent">-15%</td><td class="positive-percent">+15%</td><td class="negative-percent">-10%</td><td class="negative-percent">-20%</td><td class="positive-percent highest-percent"><b>+35%</b></td><td class="negative-percent">-20%</td><td class="negative-percent">-20%</td><td class="value-normal">252</td><td class="value-normal">252</td><td class="value-normal">252</td><td class="value-red">542</td><td class="value-red">542</td><td class="invalid-text">無効</td>
+                                </tr>
+                                <tr>
+                                    <td>夜の輪郭</td><td class="weakness-divine">聖</td><td></td><td class="positive-percent">+15%</td><td class="negative-percent">-10%</td><td class="positive-percent">+10%</td><td></td><td class="positive-percent">+20%</td><td></td><td class="positive-percent highest-percent"><b>+35%</b></td><td class="invalid-text">無効</td><td class="value-normal">252</td><td class="invalid-text">無効</td><td class="invalid-text">無効</td><td class="value-red">542</td><td class="invalid-text">無効</td>
+                                </tr>
+                                <tr>
+                                    <td>ナメレス</td><td class="weakness-divine">聖</td><td></td><td class="negative-percent">-10%</td><td class="positive-percent">+10%</td><td class="positive-percent">+15%</td><td></td><td></td><td class="positive-percent">+20%</td><td class="positive-percent highest-percent"><b>+20%</b></td><td class="invalid-text">無効</td><td class="value-normal">252</td><td class="invalid-text">無効</td><td class="invalid-text">無効</td><td class="value-red">542</td><td class="invalid-text">無効</td>
+                                </tr>
+                                <tr>
+                                    <td>ハルモニア</td><td></td><td></td><td class="negative-percent">-8%</td><td class="positive-percent highest-percent"><b>+10%</b></td><td></td><td></td><td class="negative-percent">-8%</td><td class="negative-percent">-10%</td><td class="negative-percent">-30%</td><td class="value-normal">252</td><td class="value-normal">252</td><td class="value-normal">252</td><td class="value-normal">252</td><td class="value-green">154</td><td class="invalid-text">無効</td>
+                                </tr>
+                                <tr>
+                                    <td>反逆のストラゲス</td><td class="weakness-divine">聖</td><td></td><td class="positive-percent">+10%</td><td></td><td class="positive-percent">+10%</td><td></td><td class="positive-percent">+20%</td><td class="negative-percent">-10%</td><td class="positive-percent highest-percent"><b>+25%</b></td><td class="value-red">542</td><td class="value-red">542</td><td class="value-normal">252</td><td class="value-normal">252</td><td class="value-normal">252</td><td class="invalid-text">無効</td>
+                                </tr>
+                                <tr>
+                                    <td>衝動のストラゲス</td><td class="weakness-divine">聖</td><td class="positive-percent">+5%</td><td class="negative-percent">-5%</td><td class="negative-percent">-5%</td><td class="positive-percent">+5%</td><td class="negative-percent">-5%</td><td class="positive-percent">+10%</td><td class="negative-percent">-15%</td><td class="positive-percent highest-percent"><b>+15%</b></td><td class="value-red">542</td><td class="value-red">542</td><td class="value-red">542</td><td class="value-red">542</td><td class="value-red">999</td><td class="invalid-text">無効</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const phaseNameDisplay = document.getElementById('phase-name');
+        const phaseInfoDisplay = document.getElementById('phase-info');
+        const startButton = document.getElementById('startButton');
+        const resetButton = document.getElementById('resetButton');
+        const timerContainer = document.querySelector('.timer-wrapper');
+
+        let timerInterval;
+        let totalSecondsElapsed = 0;
+
+        const phases = [
+            { duration: 4 * 60 + 30, name: "Phase 1", info: "4.5m" },
+            { duration: 3 * 60,       name: "Phase 2", info: "3m" },
+            { duration: 3 * 60 + 30, name: "Phase 3", info: "3.5m" },
+            { duration: 3 * 60,       name: "Phase 4", info: "3m" }
+        ];
+
+        let totalDuration = 0;
+        phases.forEach(phase => {
+            totalDuration += phase.duration;
+        });
+
+        let isRunning = false;
+
+        function formatTime(totalSeconds) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            const displayMinutes = String(minutes).padStart(2, '0');
+            const displaySeconds = String(seconds).padStart(2, '0');
+            return `${displayMinutes}:${displaySeconds}`;
+        }
+
+        function updateDisplay() {
+            let currentPhaseIndex = 0;
+            let accumulatedDuration = 0;
+
+            for (let i = 0; i < phases.length; i++) {
+                if (totalSecondsElapsed < accumulatedDuration + phases[i].duration) {
+                    currentPhaseIndex = i;
+                    break;
+                }
+                accumulatedDuration += phases[i].duration;
+                if (i === phases.length - 1) {
+                    currentPhaseIndex = phases.length - 1;
+                }
+            }
+
+            const currentPhase = phases[currentPhaseIndex];
+            let remainingTimeInPhase = (accumulatedDuration + currentPhase.duration) - totalSecondsElapsed;
+
+            if (totalSecondsElapsed >= totalDuration) {
+                clearInterval(timerInterval);
+                phaseNameDisplay.textContent = "00:00";
+                phaseInfoDisplay.textContent = "Completed!";
+                startButton.textContent = "START";
+                isRunning = false;
+                for (let i = 0; i < phases.length; i++) {
+                    timerContainer.classList.remove(`phase-${i + 1}`);
+                }
+                return;
+            }
+
+            phaseNameDisplay.textContent = formatTime(remainingTimeInPhase);
+            phaseInfoDisplay.textContent = `${currentPhase.name}: ${currentPhase.info}`;
+
+            for (let i = 0; i < phases.length; i++) {
+                timerContainer.classList.remove(`phase-${i + 1}`);
+            }
+            timerContainer.classList.add(`phase-${currentPhaseIndex + 1}`);
+        }
+
+        function startTimer() {
+            if (isRunning) {
+                clearInterval(timerInterval);
+                startButton.textContent = "START";
+                isRunning = false;
+            } else {
+                isRunning = true;
+                startButton.textContent = "PAUSE";
+                timerInterval = setInterval(() => {
+                    totalSecondsElapsed++;
+                    updateDisplay();
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            totalSecondsElapsed = 0;
+            startButton.textContent = "START";
+            isRunning = false;
+            updateDisplay();
+            for (let i = 0; i < phases.length; i++) {
+                timerContainer.classList.remove(`phase-${i + 1}`);
+            }
+            timerContainer.classList.add(`phase-1`);
+        }
+
+        startButton.addEventListener('click', startTimer);
+        resetButton.addEventListener('click', resetTimer);
+
+        updateDisplay();
+    </script>
+</body>
+</html>
