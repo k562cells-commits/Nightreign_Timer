@@ -296,43 +296,67 @@
         .weakness-resistance { color: #d9534f; }
         
         @media (max-width: 800px) {
+            /* 1. 全体を縦1列の並びに変更 */
             .top-row-wrapper {
+                display: flex;
                 flex-direction: column;
+                gap: 15px;
             }
+
+            /* 2. タイマーとFIELD BOSSを縦に並べる */
             .left-column-wrapper {
                 width: 100%;
                 max-width: none;
                 padding: clamp(6px, 1vw, 12px);
             }
-            .right-column-wrapper {
-                width: 100%;
-                max-width: none;
-                padding: 0;
-                background-color: transparent;
-                box-shadow: none;
-                border: none;
-                border-radius: 0;
-            }
+
+            /* 3. 右側の3つの表（RUNE, PREDICTION, WEAKNESS）の横並びを解除して縦並びに */
             .rune-daily-boss-wrapper {
                 flex-direction: column;
+                gap: 15px;
             }
-            .rune-cost-table-container, .daily-boss-table-container, .weakness-table-container {
+
+            /* 4. それぞれの表の横幅をスマホ画面いっぱいに広げる */
+            .rune-cost-table-container, 
+            .daily-boss-table-container, 
+            .weakness-table-container {
                 width: 100%;
-                padding: clamp(6px, 1vw, 12px);
+                flex: none; /* PC用の横幅固定(15%や30%)を解除 */
+                padding: 12px;
+                box-sizing: border-box;
             }
+
+            /* 5. WEAKNESSの表だけは横に長すぎるため、スマホでもテーブル単体で横スクロールできるように保護 */
+            .weakness-table-container {
+                overflow-x: auto;
+                display: block; /* 縦並びを維持 */
+            }
+            .weakness-table-container table {
+                width: max-content; /* テーブル本来の幅を維持して潰さない */
+            }
+
+            /* タイマー自体のスマホ調整 */
             .timer-wrapper {
-                aspect-ratio: 4 / 3;
-                min-height: clamp(90px, 14vh, 140px);
+                aspect-ratio: auto;
+                min-height: auto;
+                padding: 10px 0;
             }
             #phase-name { font-size: clamp(2.0em, 9vw, 3.0em); }
             #phase-info { font-size: clamp(0.7em, 1.8vw, 1.0em); }
             .buttons button { font-size: clamp(0.6em, 1.3vw, 0.7em); }
             .grid-item h2 { font-size: clamp(1.0em, 2.5vw, 1.2em); }
-            table { font-size: clamp(0.65em, 1.3vw, 0.85em); }
+            
+            /* テーブル全体の文字サイズとパディングをスマホ用に少し小さく */
+            table { font-size: 11px; }
             th, td {
-                padding: clamp(2px, 0.7vw, 4px) clamp(2px, 0.7vw, 5px);
+                padding: 6px 4px;
+                white-space: nowrap;
+            }
+            /* WEAKNESS以外の表は画面内に収まるよう、はみ出た文字を自動改行 */
+            .field-boss-table-container td,
+            .daily-boss-table-container td {
                 white-space: normal;
-                word-break: break-word;
+                word-break: break-all;
             }
         }
     </style>
